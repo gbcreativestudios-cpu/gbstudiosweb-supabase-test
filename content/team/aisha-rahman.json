@@ -1,0 +1,11 @@
+{
+  "name": "Aisha Rahman",
+  "role": "Web Developer",
+  "image": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop",
+  "bio": "Translating cutting-edge design into seamless, performant digital experiences.",
+  "socials": [
+    "twitter",
+    "linkedin"
+  ],
+  "visible": true
+}

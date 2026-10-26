@@ -1,0 +1,23 @@
+{
+  "title": "Neon Nights Festival",
+  "client": "Insomniac Events",
+  "year": "2025",
+  "category": "Event Visuals",
+  "thumbnail": "https://picsum.photos/seed/neon-nights-festival/800/1000",
+  "services": ["Stage Visuals", "LED Mapping", "Promo Campaign"],
+  "content": {
+    "problem": "The festival needed a cohesive visual language that translated from early social media promotion down to the 80-foot main stage LED monoliths.",
+    "approach": "We developed a modular cyberpunk-inspired visual system. Using real-time engines, we created assets that could scale infinitely without losing fidelity, ensuring the branding was recognizable whether on an Instagram reel or massive stadium screens.",
+    "results": "Over 50,000 attendees and a 40% increase in social engagement during the rollout phase.",
+    "blocks": [
+      { "type": "full-width-image", "url": "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=1600&auto=format&fit=crop" },
+      { "type": "two-column-image",
+        "img1": "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=800&auto=format&fit=crop",
+        "img2": "https://images.unsplash.com/photo-1470229722913-7c090be5c520?q=80&w=800&auto=format&fit=crop" }
+    ],
+    "motionAssets": [
+      { "title": "Lineup Reveal", "ratio": "9:16", "video_upload": "", "video_url": "https://player.vimeo.com/external/494254256.sd.mp4?s=d00fa53f2c9ff506a59b208ebcbff98991461947&profile_id=165" },
+      { "title": "Mainstage Loop", "ratio": "16:9", "video_upload": "", "video_url": "https://player.vimeo.com/external/434045526.sd.mp4?s=c27eecc69a27dbc4ff2b87d38afc35f1a9e7c02d&profile_id=165" }
+    ]
+  }
+}

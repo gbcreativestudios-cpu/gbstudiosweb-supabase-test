@@ -1,0 +1,16 @@
+{
+  "title": "Future Walkers",
+  "client": "Urban Step",
+  "year": "2025",
+  "category": "Campaign Visuals",
+  "thumbnail": "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=800&h=1000&auto=format&fit=crop",
+  "content": {
+    "blocks": [
+      { "type": "text", "text": "Global campaign launching the new Urban Step silhouette, focusing on motion and city environments." },
+      { "type": "gallery", "images": [
+        "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1608231387042-66d1773070a5?q=80&w=800&auto=format&fit=crop"
+      ]}
+    ]
+  }
+}

@@ -1,0 +1,273 @@
+backend:
+  name: git-gateway
+  branch: main
+
+# Netlify Identity handles login; Git Gateway lets the CMS commit content
+# changes straight to this repo on your behalf.
+
+media_folder: "public/uploads"
+public_folder: "/uploads"
+
+publish_mode: simple
+
+collections:
+  # ---------------------------------------------------------------
+  - name: "projects"
+    label: "Projects"
+    label_singular: "Project"
+    folder: "content/projects"
+    create: true
+    delete: true
+    extension: "json"
+    format: "json"
+    slug: "{{slug}}"
+    summary: "{{title}} — {{category}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Client", name: "client", widget: "string" }
+      - { label: "Year", name: "year", widget: "string" }
+      - label: "Category"
+        name: "category"
+        widget: "relation"
+        collection: "categories"
+        search_fields: ["name"]
+        display_fields: ["name"]
+        value_field: "{{name}}"
+        hint: "Pick which category this project belongs to. To rename, add, or remove categories themselves, use the 'Project Categories' section instead."
+      - { label: "Industry", name: "industry", widget: "string", required: false }
+      - label: "Thumbnail"
+        name: "thumbnail"
+        widget: "image"
+        required: false
+        hint: "Leave blank to auto-use the first image from the content blocks below."
+      - label: "Services"
+        name: "services"
+        widget: "list"
+        field: { label: "Service", name: "service", widget: "string" }
+        required: false
+      - label: "Content"
+        name: "content"
+        widget: "object"
+        fields:
+          - { label: "Problem", name: "problem", widget: "text", required: false }
+          - { label: "Approach", name: "approach", widget: "text", required: false }
+          - { label: "Strategy", name: "strategy", widget: "text", required: false }
+          - { label: "Identity Development", name: "identityDevelopment", widget: "text", required: false }
+          - { label: "Outcome", name: "outcome", widget: "text", required: false }
+          - { label: "Results", name: "results", widget: "text", required: false }
+          - label: "Brand Motion (optional featured video)"
+            name: "brandMotion"
+            widget: "object"
+            required: false
+            fields:
+              - { label: "Show this section", name: "active", widget: "boolean", default: false }
+              - { label: "Title", name: "title", widget: "string", required: false }
+              - { label: "Upload video file", name: "video_upload", widget: "file", required: false, media_library: { config: { max_file_size: 314572800 } }, hint: "Upload a video file directly." }
+              - { label: "Or paste a video URL (Vimeo / YouTube / direct .mp4 link)", name: "video_url", widget: "string", required: false }
+          - label: "Content Blocks"
+            name: "blocks"
+            widget: "list"
+            required: false
+            types:
+              - label: "Text"
+                name: "text"
+                widget: "object"
+                fields:
+                  - { label: "Text", name: "text", widget: "text" }
+              - label: "Full Width Image"
+                name: "full-width-image"
+                widget: "object"
+                fields:
+                  - { label: "Image", name: "url", widget: "image" }
+              - label: "Image"
+                name: "image"
+                widget: "object"
+                fields:
+                  - { label: "Image", name: "url", widget: "image" }
+                  - { label: "Ratio", name: "ratio", widget: "select", options: ["21:9", "1:1"], default: "21:9", required: false }
+              - label: "Two Column Image"
+                name: "two-column-image"
+                widget: "object"
+                fields:
+                  - { label: "Image 1", name: "img1", widget: "image" }
+                  - { label: "Image 2", name: "img2", widget: "image" }
+              - label: "Gallery"
+                name: "gallery"
+                widget: "object"
+                fields:
+                  - label: "Images"
+                    name: "images"
+                    widget: "list"
+                    field: { label: "Image", name: "image", widget: "image" }
+              - label: "Video"
+                name: "video"
+                widget: "object"
+                fields:
+                  - { label: "Ratio", name: "ratio", widget: "select", options: ["16:9", "1:1"], default: "16:9", required: false }
+                  - { label: "Upload video file", name: "video_upload", widget: "file", required: false, media_library: { config: { max_file_size: 314572800 } }, hint: "Upload a video file directly." }
+                  - { label: "Or paste a video URL (Vimeo / YouTube / direct .mp4 link)", name: "video_url", widget: "string", required: false }
+          - label: "Motion Assets (grid of short clips)"
+            name: "motionAssets"
+            widget: "list"
+            required: false
+            fields:
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Ratio", name: "ratio", widget: "select", options: ["16:9", "9:16", "1:1"], default: "16:9" }
+              - { label: "Upload video file", name: "video_upload", widget: "file", required: false, media_library: { config: { max_file_size: 314572800 } }, hint: "Upload a video file directly." }
+              - { label: "Or paste a video URL (Vimeo / YouTube / direct .mp4 link)", name: "video_url", widget: "string", required: false }
+
+  # ---------------------------------------------------------------
+  - name: "categories"
+    label: "Project Categories"
+    label_singular: "Category"
+    folder: "content/categories"
+    create: true
+    delete: true
+    extension: "json"
+    format: "json"
+    slug: "{{slug}}"
+    summary: "{{name}}"
+    fields:
+      - { label: "Category Name", name: "name", widget: "string", hint: "This is the label shown on the Work page filter tabs, on project cards, and in the Category picker when creating a project." }
+      - { label: "Display Order", name: "order", widget: "number", default: 1, hint: "Lower numbers show first in the filter tabs." }
+
+  # ---------------------------------------------------------------
+  - name: "motion_categories"
+    label: "Motion Reel Categories"
+    label_singular: "Category"
+    folder: "content/motion-categories"
+    create: true
+    delete: true
+    extension: "json"
+    format: "json"
+    slug: "{{slug}}"
+    summary: "{{subcategory}}"
+    fields:
+      - { label: "Category Name", name: "subcategory", widget: "string", hint: "e.g. Motion Reels, Ad Motion, LED Animation" }
+      - { label: "Display Order", name: "order", widget: "number", default: 1 }
+      - label: "Videos"
+        name: "videos"
+        widget: "list"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Ratio", name: "ratio", widget: "select", options: ["16:9", "9:16", "1:1"], default: "16:9" }
+          - { label: "Upload video file", name: "video_upload", widget: "file", required: false, media_library: { config: { max_file_size: 314572800 } }, hint: "Upload a video file directly." }
+          - { label: "Or paste a video URL (Vimeo / YouTube / direct .mp4 link)", name: "video_url", widget: "string", required: false }
+
+  # ---------------------------------------------------------------
+  - name: "testimonials"
+    label: "Testimonials"
+    label_singular: "Testimonial"
+    folder: "content/testimonials"
+    create: true
+    delete: true
+    extension: "json"
+    format: "json"
+    slug: "{{author}}"
+    summary: "{{author}} — {{role}}"
+    fields:
+      - { label: "Quote", name: "text", widget: "text" }
+      - { label: "Author Name", name: "author", widget: "string" }
+      - { label: "Author Role", name: "role", widget: "string" }
+      - { label: "Author Photo", name: "image", widget: "image" }
+      - { label: "Star Rating", name: "stars", widget: "number", default: 5, min: 1, max: 5, value_type: "int" }
+
+  # ---------------------------------------------------------------
+  - name: "team"
+    label: "Team"
+    label_singular: "Team Member"
+    folder: "content/team"
+    create: true
+    delete: true
+    extension: "json"
+    format: "json"
+    slug: "{{name}}"
+    summary: "{{name}} — {{role}}"
+    fields:
+      - { label: "Name", name: "name", widget: "string" }
+      - { label: "Role", name: "role", widget: "string" }
+      - { label: "Photo", name: "image", widget: "image" }
+      - { label: "Bio", name: "bio", widget: "text" }
+      - label: "Show on website"
+        name: "visible"
+        widget: "boolean"
+        default: true
+        hint: "Turn off to hide this member from the About page without deleting them."
+      - label: "Social Links"
+        name: "socials"
+        widget: "select"
+        multiple: true
+        options: ["instagram", "twitter", "linkedin", "vimeo"]
+        required: false
+
+  # ---------------------------------------------------------------
+  - name: "settings"
+    label: "Site Settings"
+    editor: { preview: false }
+    files:
+      - name: "site"
+        label: "General & Hero"
+        file: "content/site.json"
+        fields:
+          - { label: "Studio Founded Year", name: "startYear", widget: "number", hint: "Used to auto-calculate 'years of experience'." }
+          - { label: "Contact Email", name: "contactEmail", widget: "string" }
+          - label: "Brand Identity Intake Form URL"
+            name: "brandIdentityFormUrl"
+            widget: "string"
+            required: false
+            hint: "Paste your Google Form link here (Send > click the link icon in Google Forms to get a shareable URL). When a client picks 'Brand Identity' on the Start a Project page, a link to this form appears. Leave blank to hide it."
+          - { label: "Footer Blurb", name: "footerBlurb", widget: "text" }
+          - label: "Nav Logo"
+            name: "navLogo"
+            widget: "image"
+            required: false
+            hint: "Shown in the top nav bar. Leave blank to keep the default 'GB STUDIOS' letter mark."
+          - label: "Footer Logo"
+            name: "footerLogo"
+            widget: "image"
+            required: false
+            hint: "Shown in the footer. Leave blank to keep the default 'GB STUDIOS' letter mark. Independent from the Nav Logo above — upload a different version (e.g. lighter, simplified) if you want."
+          - label: "Favicon"
+            name: "favicon"
+            widget: "image"
+            required: false
+            hint: "Browser tab icon. Leave blank to keep the default. Square image recommended (SVG or PNG, at least 48x48px)."
+          - label: "Brand Ticker Logos"
+            name: "brands"
+            widget: "list"
+            field: { label: "Logo", name: "logo", widget: "image" }
+          - label: "Hero Section"
+            name: "hero"
+            widget: "object"
+            fields:
+              - { label: "Headline", name: "headline", widget: "string" }
+              - { label: "Subheadline", name: "subheadline", widget: "text" }
+              - label: "Content Alignment"
+                name: "alignment"
+                widget: "select"
+                options: ["bottom-left", "bottom-center", "bottom-right", "center-left", "center", "center-right"]
+              - label: "Background Type"
+                name: "media_type"
+                widget: "select"
+                options: ["video", "image"]
+                default: "video"
+              - { label: "Background Image (if type = image)", name: "media_image", widget: "image", required: false }
+              - { label: "Upload background video file (if type = video)", name: "media_video_upload", widget: "file", required: false, media_library: { config: { max_file_size: 314572800 } } }
+              - { label: "Or paste a background video URL", name: "media_video_url", widget: "string", required: false }
+
+      - name: "about"
+        label: "About Page"
+        file: "content/about.json"
+        fields:
+          - { label: "About Page Headline", name: "heroTitle", widget: "string" }
+          - { label: "About Page Subheadline", name: "heroSubtitle", widget: "text" }
+          - { label: "Why We Exist", name: "whyWeExist", widget: "text", required: false }
+          - { label: "Our Goal", name: "ourGoal", widget: "text", required: false }
+          - label: "Founder"
+            name: "founder"
+            widget: "object"
+            fields:
+              - { label: "Name", name: "name", widget: "string" }
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Photo", name: "image", widget: "image" }
+              - { label: "Message / Quote", name: "message", widget: "text" }

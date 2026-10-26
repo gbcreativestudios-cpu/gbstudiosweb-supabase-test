@@ -1,0 +1,15 @@
+{
+  "title": "Tech Summit 2024",
+  "client": "Innovate Corp",
+  "year": "2024",
+  "category": "Event Visuals",
+  "thumbnail": "",
+  "content": {
+    "problem": "Creating an immersive environment for 5,000 tech leaders.",
+    "approach": "Clean, data-driven aesthetics projected across multi-dimensional surfaces.",
+    "blocks": [
+      { "type": "full-width-image", "url": "https://images.unsplash.com/photo-1515187029135-18ee286d815b?q=80&w=1600&auto=format&fit=crop" }
+    ],
+    "motionAssets": []
+  }
+}

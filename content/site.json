@@ -1,0 +1,23 @@
+{
+  "footerBlurb": "Thoughtfully crafted. Purposefully designed.",
+  "brandIdentityFormUrl": "https://forms.gle/WDDZQQJh3z2A4GvA9",
+  "footerLogo": "/uploads/white-500x.webp",
+  "brands": [
+    "/uploads/c-c-04.png",
+    "/uploads/main-logo-white.png",
+    "/uploads/icon-white.png"
+  ],
+  "navLogo": "/uploads/colored-white-500x.webp",
+  "favicon": "/uploads/fav-2-500x.webp",
+  "hero": {
+    "media_type": "video",
+    "media_video_upload": "/uploads/for-web-1-.webm",
+    "media_video_url": "",
+    "media_image": "",
+    "alignment": "bottom-left",
+    "headline": "Creativity Without Limits",
+    "subheadline": "Ideas become extraordinary when they're free from convention. We create work that challenges expectations and earns attention."
+  },
+  "contactEmail": "gbcreativestudios@gmail.com",
+  "startYear": 2020
+}

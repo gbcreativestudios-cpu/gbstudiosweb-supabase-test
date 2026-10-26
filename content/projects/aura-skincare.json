@@ -1,0 +1,27 @@
+{
+  "title": "Aura Skincare",
+  "client": "Aura Beauty",
+  "year": "2024",
+  "category": "Brand Identity",
+  "industry": "Cosmetics",
+  "thumbnail": "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?q=80&w=1600&auto=format&fit=crop",
+  "content": {
+    "problem": "Aura was entering a saturated market and needed a brand identity that felt simultaneously clinical and organic.",
+    "strategy": "We positioned Aura at the intersection of science and nature, utilizing a stark, minimal typographic system paired with fluid, organic 3D imagery.",
+    "identityDevelopment": "The logo was custom-drawn to feel sharp yet welcoming. The color palette was restrained to off-whites and clinical grays, allowing the vibrant product textures to stand out.",
+    "outcome": "Aura sold out their initial production run within 48 hours of launch.",
+    "brandMotion": {
+      "active": true,
+      "title": "Brand Reveal Anthem",
+      "video_upload": "",
+      "video_url": "https://player.vimeo.com/external/517090081.sd.mp4?s=c23573216ccf8983e20e8b2b73bc24e542ccb308&profile_id=165"
+    },
+    "blocks": [
+      { "type": "gallery", "images": [
+        "https://images.unsplash.com/photo-1599305090598-fe179d501227?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?q=80&w=800&auto=format&fit=crop"
+      ]}
+    ]
+  }
+}

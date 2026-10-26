@@ -1,0 +1,11 @@
+{
+  "name": "Chloe Vance",
+  "role": "Social Media Manager",
+  "image": "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=400&auto=format&fit=crop",
+  "bio": "Architecting digital narratives and driving engagement across global campaigns.",
+  "socials": [
+    "twitter",
+    "instagram"
+  ],
+  "visible": true
+}
