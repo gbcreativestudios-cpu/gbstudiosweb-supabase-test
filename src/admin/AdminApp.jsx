@@ -11,6 +11,106 @@ const COLLECTIONS = [
   ['team', 'Team'],
 ];
 const SINGLETONS = new Set(['site', 'about']);
+const IMAGE_FIELD = /(image|thumbnail|logo|photo|avatar|favicon)/i;
+const LONG_TEXT_FIELD = /(text|bio|description|message|subtitle|headline|problem|strategy|outcome|approach|results|goal|why|blurb)/i;
+
+function labelFor(key) {
+  return key.replace(/([a-z0-9])([A-Z])/g, '$1 $2').replace(/[_-]+/g, ' ').replace(/^./, (letter) => letter.toUpperCase());
+}
+
+function cloneValue(value) {
+  return value === undefined ? {} : JSON.parse(JSON.stringify(value));
+}
+
+function blankLike(value, key = '') {
+  if (Array.isArray(value)) return [];
+  if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value).map(([childKey, childValue]) => [childKey, blankLike(childValue, childKey)]));
+  if (typeof value === 'string') return /(type|ratio|category|subcategory)/i.test(key) ? value : '';
+  if (typeof value === 'boolean') return false;
+  if (typeof value === 'number') return 0;
+  return '';
+}
+
+function newArrayItem(field, items) {
+  if (items.length) return blankLike(items[0]);
+  if (/^(blocks)$/i.test(field)) return { type: 'text', text: '' };
+  if (/^(motionassets|videos)$/i.test(field)) return { title: '', video_url: '' };
+  return '';
+}
+
+function newRecord(collection) {
+  if (collection === 'projects') return {
+    title: '', client: '', year: new Date().getFullYear().toString(), category: '', industry: '', thumbnail: '', services: [],
+    content: { problem: '', approach: '', results: '', blocks: [] },
+  };
+  if (collection === 'testimonials') return { text: '', author: '', role: '', image: '', stars: 5 };
+  if (collection === 'team') return { name: '', role: '', image: '', bio: '', socials: [], visible: true };
+  if (collection === 'categories') return { title: '', slug: '', order: 0 };
+  if (collection === 'motion_categories') return { title: '', subcategory: '', order: 0, videos: [] };
+  return {};
+}
+
+function ContentFields({ value, onChange, depth = 0 }) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  return <div className={depth ? 'space-y-4' : 'grid gap-x-5 gap-y-4 md:grid-cols-2'}>
+    {Object.entries(value).map(([key, fieldValue]) => <FieldEditor
+      key={key}
+      name={key}
+      value={fieldValue}
+      depth={depth}
+      onChange={(next) => onChange({ ...value, [key]: next })}
+    />)}
+  </div>;
+}
+
+function FieldEditor({ name, value, onChange, depth = 0 }) {
+  const imageField = IMAGE_FIELD.test(name);
+  const fieldLabel = labelFor(name);
+  const inputClass = 'mt-1 w-full rounded-lg border border-black/10 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none focus:border-orange-400';
+
+  if (Array.isArray(value)) {
+    return <fieldset className="rounded-xl border border-black/10 p-4 md:col-span-2">
+      <legend className="px-1 text-sm font-semibold text-slate-700">{fieldLabel}</legend>
+      <div className="space-y-3">
+        {value.map((item, index) => <div key={index} className="rounded-lg bg-slate-50 p-3">
+          <div className="mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-wide text-slate-400">
+            <span>{fieldLabel} {index + 1}</span>
+            <button type="button" onClick={() => onChange(value.filter((_, itemIndex) => itemIndex !== index))} className="normal-case tracking-normal text-red-600 hover:text-red-700">Remove</button>
+          </div>
+          {item && typeof item === 'object'
+            ? <ContentFields value={item} depth={depth + 1} onChange={(next) => onChange(value.map((entry, itemIndex) => itemIndex === index ? next : entry))} />
+            : <FieldEditor name={name} value={item} depth={depth + 1} onChange={(next) => onChange(value.map((entry, itemIndex) => itemIndex === index ? next : entry))} />}
+        </div>)}
+      </div>
+      <button type="button" onClick={() => onChange([...value, newArrayItem(name, value)])} className="mt-3 rounded-lg border border-black/10 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100">Add {fieldLabel.toLowerCase()}</button>
+    </fieldset>;
+  }
+
+  if (value && typeof value === 'object') {
+    return <fieldset className="rounded-xl border border-black/10 p-4 md:col-span-2">
+      <legend className="px-1 text-sm font-semibold text-slate-700">{fieldLabel}</legend>
+      <ContentFields value={value} depth={depth + 1} onChange={onChange} />
+    </fieldset>;
+  }
+
+  if (typeof value === 'boolean') {
+    return <label className="flex items-center gap-3 rounded-lg border border-black/10 px-3 py-3 text-sm text-slate-700">
+      <input type="checkbox" checked={value} onChange={(event) => onChange(event.target.checked)} className="h-4 w-4 accent-orange-500" />
+      {fieldLabel}
+    </label>;
+  }
+
+  const isNumber = typeof value === 'number';
+  const isLongText = !isNumber && (LONG_TEXT_FIELD.test(name) || String(value ?? '').length > 110);
+  const stringValue = value ?? '';
+  return <label className={depth === 0 ? '' : 'block'}>
+    <span className="text-sm font-medium text-slate-600">{fieldLabel}</span>
+    {isLongText
+      ? <textarea value={stringValue} onChange={(event) => onChange(event.target.value)} rows={4} className={inputClass + ' resize-y'} />
+      : <input type={isNumber ? 'number' : 'text'} value={stringValue} onChange={(event) => onChange(isNumber ? Number(event.target.value) : event.target.value)} className={inputClass} />}
+    {imageField && typeof stringValue === 'string' && stringValue && <img src={stringValue} alt={fieldLabel + ' preview'} className="mt-2 h-24 w-36 rounded-lg border border-black/10 bg-slate-100 object-cover" />}
+  </label>;
+}
 
 function LoginScreen({ onLogin, error, busy }) {
   const [email, setEmail] = useState('');
@@ -53,7 +153,7 @@ export default function AdminApp() {
   const [records, setRecords] = useState([]);
   const [collection, setCollection] = useState('projects');
   const [activeSlug, setActiveSlug] = useState('');
-  const [draft, setDraft] = useState('');
+  const [draft, setDraft] = useState({});
   const [published, setPublished] = useState(true);
   const [notice, setNotice] = useState('');
   const [newEntry, setNewEntry] = useState(false);
@@ -80,8 +180,8 @@ export default function AdminApp() {
 
   useEffect(() => {
     if (newEntry) return;
-    if (!selected) { setDraft(''); setPublished(true); return; }
-    setDraft(JSON.stringify(selected.data, null, 2));
+    if (!selected) { setDraft({}); setPublished(true); return; }
+    setDraft(cloneValue(selected.data));
     setPublished(selected.is_published);
   }, [selected?.id, selected?.updated_at, newEntry]);
 
@@ -95,10 +195,10 @@ export default function AdminApp() {
 
   async function saveRecord() {
     setError(''); setNotice('');
-    let parsed;
-    try { parsed = JSON.parse(draft); } catch { setError('Check the JSON content and try saving again.'); return; }
+    const parsed = draft;
+
     const slug = newEntry ? (SINGLETONS.has(collection) ? collection : (parsed.slug || parsed.title || parsed.name || crypto.randomUUID()).toString().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')) : activeSlug;
-    if (!slug) { setError('This item needs a title or name so it can be saved.'); return; }
+    if (!slug) { setError('Add a title or name before saving this item.'); return; }
     const { data, error: saveError } = await supabase.from('site_content').upsert(
       { collection, slug, data: parsed, is_published: published },
       { onConflict: 'collection,slug' },
@@ -113,7 +213,7 @@ export default function AdminApp() {
     const { error: deleteError } = await supabase.from('site_content').delete().eq('id', selected.id);
     if (deleteError) { setError(deleteError.message); return; }
     setRecords((current) => current.filter((item) => item.id !== selected.id));
-    setActiveSlug(''); setDraft(''); setNotice('Content removed.');
+    setActiveSlug(''); setDraft({}); setNotice('Content removed.');
   }
 
   async function signOut() {
@@ -140,15 +240,15 @@ export default function AdminApp() {
           {COLLECTIONS.map(([key, label]) => <button key={key} onClick={() => { setCollection(key); setActiveSlug(''); setNewEntry(false); setError(''); }} className={`mb-1 w-full rounded-lg px-3 py-2.5 text-left text-sm ${collection === key ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100'}`}>{label}<span className="float-right opacity-60">{records.filter((r) => r.collection === key).length}</span></button>)}
         </nav>
         <section className="rounded-2xl border border-black/10 bg-white p-3">
-          <div className="flex items-center justify-between px-3 py-2"><h2 className="font-semibold">{collectionLabel}</h2>{!SINGLETONS.has(collection) && <button onClick={() => { setNewEntry(true); setActiveSlug(''); setDraft(JSON.stringify({}, null, 2)); setPublished(false); setError(''); }} className="rounded-md bg-orange-500 px-2.5 py-1.5 text-xs font-semibold text-white">New</button>}</div>
+          <div className="flex items-center justify-between px-3 py-2"><h2 className="font-semibold">{collectionLabel}</h2>{!SINGLETONS.has(collection) && <button onClick={() => { setNewEntry(true); setActiveSlug(''); setDraft(newRecord(collection)); setPublished(false); setError(''); }} className="rounded-md bg-orange-500 px-2.5 py-1.5 text-xs font-semibold text-white">New</button>}</div>
           <div className="mt-2 space-y-1">{visibleRecords.map((record) => <button key={record.id} onClick={() => { setNewEntry(false); setActiveSlug(record.slug); setError(''); }} className={`w-full rounded-lg px-3 py-2 text-left text-sm ${activeSlug === record.slug && !newEntry ? 'bg-orange-50 text-orange-800' : 'hover:bg-slate-50'}`}><span className="block truncate font-medium">{record.data.title || record.data.name || record.data.subcategory || record.slug}</span><span className="text-xs text-slate-400">{record.is_published ? 'Published' : 'Draft'}</span></button>)}</div>
           {!visibleRecords.length && <p className="px-3 py-5 text-sm text-slate-400">No records yet. Import the current content to begin.</p>}
         </section>
         <section className="min-h-[560px] rounded-2xl border border-black/10 bg-white p-5">
           {!selected && !newEntry ? <div className="flex h-full min-h-[500px] items-center justify-center text-center text-slate-400"><p>Select an item to edit<br/>or create a new one.</p></div> : <>
             <div className="mb-4 flex flex-wrap items-start justify-between gap-4"><div><p className="text-xs uppercase tracking-wider text-slate-400">{collectionLabel}</p><h2 className="mt-1 text-xl font-semibold">{newEntry ? 'New item' : (selected?.data.title || selected?.data.name || selected?.slug)}</h2></div><label className="flex items-center gap-2 text-sm text-slate-600"><input type="checkbox" checked={published} onChange={(e) => setPublished(e.target.checked)} /> Published</label></div>
-            <p className="mb-2 text-sm text-slate-500">Content record (JSON)</p>
-            <textarea value={draft} onChange={(e) => setDraft(e.target.value)} spellCheck="false" className="min-h-[400px] w-full rounded-xl border border-black/10 bg-slate-950 p-4 font-mono text-sm leading-6 text-emerald-100 outline-none focus:border-orange-400" />
+            <p className="mb-4 text-sm text-slate-500">Edit the content using these fields. Images can be set with an image URL.</p>
+            <ContentFields value={draft} onChange={setDraft} />
             {error && <p role="alert" className="mt-3 text-sm text-red-600">{error}</p>}
             {notice && <p role="status" className="mt-3 text-sm text-emerald-700">{notice}</p>}
             <div className="mt-4 flex justify-between"><button onClick={deleteRecord} disabled={!selected || SINGLETONS.has(collection)} className="rounded-lg px-3 py-2 text-sm text-red-600 hover:bg-red-50 disabled:hidden">Delete</button><button onClick={saveRecord} className="ml-auto rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-700">Save changes</button></div>
@@ -158,3 +258,4 @@ export default function AdminApp() {
     </main>
   );
 }
+
